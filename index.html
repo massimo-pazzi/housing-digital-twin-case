@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Цифровой двойник ЖКХ</title>
+<meta name="description" content="Продуктовый кейс: ИИ-платформа предиктивного обслуживания жилого фонда Москвы">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f5f6f7; --surface:#ffffff; --ink:#18202a; --ink-2:#4b5662; --muted:#6c7782;
+  --rule:#d9dee3; --accent:#1f5fae; --accent-soft:#e6eef8; --neutral:#aab2bb;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#a07800; --ok:#1b8a5a; --warn:#a36b00; --no:#8a929b;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ color-scheme:dark;
+    --bg:#11161c; --surface:#171d24; --ink:#e7ebef; --ink-2:#b5bec7; --muted:#8c96a0;
+    --rule:#2c343d; --accent:#79a9e8; --accent-soft:#1c2632; --neutral:#5d6670;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --ok:#3fbf86; --warn:#e0a640; --no:#7d8791; }
+}
+:root[data-theme="dark"]{ color-scheme:dark;
+  --bg:#11161c; --surface:#171d24; --ink:#e7ebef; --ink-2:#b5bec7; --muted:#8c96a0;
+  --rule:#2c343d; --accent:#79a9e8; --accent-soft:#1c2632; --neutral:#5d6670;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --ok:#3fbf86; --warn:#e0a640; --no:#7d8791; }
+body{margin:0; background:var(--bg); color:var(--ink); font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px; line-height:1.62; padding-inline:16px; padding-block:40px 64px;}
+.page{max-width:48rem; margin:0 auto;}
+a{color:var(--accent);}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); margin:0 0 14px;}
+h1{font-size:clamp(1.7rem,4.2vw,2.3rem); line-height:1.18; font-weight:700; letter-spacing:-.01em; text-wrap:balance; margin:0 0 16px;}
+h2{font-size:1.28rem; line-height:1.3; font-weight:650; text-wrap:balance; margin:46px 0 12px; padding-top:22px; border-top:1px solid var(--rule);}
+.author{display:flex; align-items:center; gap:12px; margin:4px 0 16px; font-weight:600; font-size:15px;}
+.author img{width:64px; height:64px; border-radius:50%; object-fit:cover; border:1px solid var(--rule);}
+.author + p em{color:var(--ink-2); font-size:15px;}
+p{margin:0 0 14px;} strong{font-weight:620;} hr{display:none;}
+ul,ol{margin:0 0 14px; padding-left:1.3em;} li{margin-bottom:4px;}
+.chart{margin:16px 0 22px; background:var(--surface); border:1px solid var(--rule); border-radius:6px; padding:14px 16px 12px;}
+.chart-title{font-weight:600; font-size:14.5px; margin-bottom:10px; line-height:1.4;}
+.note{font-size:12.5px; color:var(--muted); margin:10px 0 0; line-height:1.5;}
+.shot img{display:block; width:100%; height:auto; border:1px solid var(--rule); border-radius:4px;}
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px;}
+.kpi{border:1px solid var(--rule); border-radius:6px; padding:12px 14px;}
+.kpi-v{font-size:1.45rem; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.01em;}
+.kpi-l{font-size:13px; line-height:1.4; color:var(--ink-2); margin-top:4px;}
+.flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:8px; align-items:stretch;}
+.flow-col{border:1px solid var(--rule); border-radius:6px; padding:10px 12px; font-size:13.5px;}
+.flow-col ul{margin:0; padding-left:1.1em;} .flow-col li{margin-bottom:5px; line-height:1.4;}
+.flow-h{font-weight:650; font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2); margin-bottom:8px;}
+.flow-col.core{background:var(--accent-soft); border-color:var(--accent);} .flow-col.core .flow-h{color:var(--accent);}
+.arrow{align-self:center; color:var(--muted); font-size:22px;}
+@media (max-width:640px){ .flow{grid-template-columns:1fr;} .arrow{transform:rotate(90deg); justify-self:center;} }
+.table-wrap{overflow-x:auto; margin:0 0 4px;}
+table{border-collapse:collapse; width:100%; font-size:14px;}
+th,td{text-align:left; padding:8px 10px 8px 0; border-bottom:1px solid var(--rule); vertical-align:top;}
+th{font-weight:600; color:var(--ink-2); font-size:12.5px;}
+.matrix td:first-child{font-weight:550; min-width:12em;} .matrix th:last-child,.matrix td:last-child{background:var(--accent-soft); padding-left:8px;}
+.y{color:var(--ok); font-weight:600;} .p{color:var(--warn); font-weight:600;} .n{color:var(--no);}
+.hbars{display:grid; gap:10px;}
+.hb-row{display:grid; grid-template-columns:minmax(10em,16em) 1fr; gap:12px; align-items:center; font-size:13.5px;}
+.hb-track{position:relative; height:22px; background:var(--bg); border-radius:3px;}
+.hb-bar{height:100%; border-radius:3px;} .hb-bar.s1{background:var(--s1);} .hb-bar.neutral{background:var(--neutral);}
+.hb-v{position:absolute; top:2px; margin-left:8px; font-weight:600; font-variant-numeric:tabular-nums; font-size:13px;}
+.tree{display:grid; gap:10px; font-size:13.5px; text-align:center;}
+.tree-top{display:flex; justify-content:center;}
+.node{border:1px solid var(--rule); border-radius:6px; padding:10px 12px; line-height:1.4;} .node span{color:var(--muted); font-size:12.5px;}
+.node.star{background:var(--accent-soft); border-color:var(--accent); max-width:22em;}
+.tree-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;}
+.tree-row.guard .node{border-style:dashed;}
+.tree-label{font-size:12px; color:var(--muted); margin-top:-4px;}
+.gantt-row{display:grid; grid-template-columns:minmax(11em,16em) 1fr; gap:12px; align-items:center; margin-bottom:10px; font-size:13.5px;}
+.gantt-l span{display:block; color:var(--muted); font-size:12px;}
+.gantt-track{position:relative; height:20px; background:var(--bg); border-radius:3px;}
+.gantt-bar{position:absolute; top:0; height:100%; border-radius:3px;}
+.gantt-bar.s1{background:var(--s4);} .gantt-bar.s2{background:var(--s3);} .gantt-bar.s3{background:var(--s1);} .gantt-bar.s4{background:var(--s2);}
+.gate{position:absolute; top:3px; width:12px; height:12px; margin-left:-6px; background:var(--ink); transform:rotate(45deg); border:2px solid var(--surface);}
+.gantt-axis{display:grid; grid-template-columns:minmax(11em,16em) 1fr; gap:12px; font-size:11px; color:var(--muted); font-family:"IBM Plex Mono",ui-monospace,monospace;}
+.gantt-axis div{position:relative; height:14px;} .gantt-axis div span{position:absolute; transform:translateX(-50%);}
+.gantt-axis div span:first-child{transform:none;}
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px;}
+.card{position:relative; border:1px solid var(--rule); border-radius:6px; padding:12px 14px; font-size:13.5px; line-height:1.45;}
+.card.rec{border-color:var(--accent); background:var(--accent-soft);}
+.badge{position:absolute; top:-10px; right:10px; background:var(--accent); color:#fff; font-size:11px; padding:1px 8px; border-radius:10px;}
+.card-h{font-weight:650; font-size:15px;} .card-s{color:var(--ink-2); margin:2px 0 8px;}
+.pro{color:var(--ok);} .con{color:var(--ink-2);}
+.streams{display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center; margin-top:12px; font-size:13px;}
+.streams .st{border:1px solid var(--rule); border-radius:12px; padding:2px 10px;}
+.sources{font-size:14.5px; line-height:1.55; padding-left:1.5em;}
+@media (max-width:520px){ body{font-size:16px; padding-block:24px 48px;} .hb-row,.gantt-row,.gantt-axis{grid-template-columns:1fr;} .gantt-axis span:first-child{display:none;} }
+</style>
+</head>
+<body>
+<main class="page">
+<p class="eyebrow">Продуктовый кейс · Максим Поципух · Октябрь 2026</p>
+<h1>Цифровой двойник жилого фонда Москвы: как я проектировал ИИ-продукт для городского ЖКХ</h1>
+<div class="author"><img src="data:image/jpeg;base64,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" alt="Максим Поципух" width="64" height="64"><span>Максим Поципух</span></div>
+<p><em>Продуктовый кейс. Лаборатория Наносемантика, по запросу Мосстратегии
+(Департамент экономической политики и развития города Москвы), апрель–май
+2026 года. Автор — Максим Поципух, заместитель директора по развитию.
+Прототип, сверка фактов и источники — в репозитории проекта.</em></p>
+<hr />
+<h2>Коротко</h2>
+<p>Мосстратегия попросила оценить, может ли Москва перейти от аварийного к
+предиктивному обслуживанию жилого фонда: чинить инженерные системы домов до
+того, как они откажут, а не после звонка жителя. Я провёл исследование
+мирового и российского опыта, сформулировал продукт — платформу,
+которая собирает данные о домах в одну карту, показывает состояние каждого
+дома «светофором» и прогнозирует отказы оборудования, — разработал кликабельный
+прототип и стратегию защиты проекта перед руководством. 7 мая 2026 года
+концепция была представлена заказчику. Решения о запуске пока нет.</p>
+<p>В кейсе — продуктовая логика проекта: для кого продукт, чем он отличается от
+того, что у города уже есть, как устроен прогноз и как понять, что он
+работает, с чего начинать и как зарабатывать. Все факты сверены с
+первоисточниками.</p>
+<figure class="chart"><figcaption class="chart-title">Продукт в одной схеме: данные о доме из разных систем → одна карточка и прогноз → решение</figcaption><div class="flow"><div class="flow-col src"><div class="flow-h">Источники данных</div><ul><li>Заявки жителей и диспетчерских служб</li><li>Паспорта домов и оборудования, капремонт</li><li>Телеметрия: тепловые пункты, лифты, датчики</li><li>Слои «Цифрового двойника Москвы»</li></ul></div><div class="arrow" aria-hidden="true">→</div><div class="flow-col core"><div class="flow-h">Слой дома</div><ul><li>Карточка дома: системы, оборудование, история работ</li><li>Светофор состояния</li><li>Прогноз отказа с объяснением</li><li>Превентивный наряд в один клик</li></ul></div><div class="arrow" aria-hidden="true">→</div><div class="flow-col use"><div class="flow-h">Кто принимает решение</div><ul><li>Диспетчер — что брать первым</li><li>Инженер — что проверить на неделе</li><li>Руководитель района — куда бригады и бюджет</li><li>Город — капремонт и подрядчики</li></ul></div></div></figure>
+
+<hr />
+<h2>1. Проблема и почему сейчас</h2>
+<p>Жилой фонд Москвы — это более 30 тысяч многоквартирных домов, 295 млн м²
+жилья и более 117 тысяч лифтов, почти четверть всех лифтов России. Только в
+программу капремонта до 2044 года включено более 420 тысяч инженерных систем
+и элементов. Обслуживание этого фонда устроено в основном реактивно: система
+ломается, житель звонит, диспетчер принимает заявку, бригада выезжает.</p>
+<figure class="chart"><figcaption class="chart-title">Масштаб жилого фонда Москвы</figcaption><div class="kpis"><div class="kpi"><div class="kpi-v">30 тыс.+</div><div class="kpi-l">многоквартирных домов в программе капремонта</div></div><div class="kpi"><div class="kpi-v">295 млн м²</div><div class="kpi-l">жилья, конец 2024 года</div></div><div class="kpi"><div class="kpi-v">117 тыс.+</div><div class="kpi-l">лифтов в жилых домах — почти четверть лифтов России</div></div><div class="kpi"><div class="kpi-v">420 тыс.+</div><div class="kpi-l">инженерных систем и элементов в программе капремонта</div></div><div class="kpi"><div class="kpi-v">60 млн+</div><div class="kpi-l">заявок через Единый диспетчерский центр с 2016 года</div></div><div class="kpi"><div class="kpi-v">1 000+</div><div class="kpi-l">диспетчерских служб подключено к центру</div></div></div><p class="note">Источники: <a href="https://www.mos.ru/city/projects/kapremont/" target="_blank" rel="noopener">капремонт, mos.ru</a>; <a href="https://77.rosstat.gov.ru/storage/mediabank/%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%D0%B2%20%D1%86%D0%B8%D1%84%D1%80%D0%B0%D1%85%202024.pdf" target="_blank" rel="noopener">Мосстат</a>; <a href="https://www.mos.ru/mayor/themes/12647050/" target="_blank" rel="noopener">лифты, mos.ru</a>; <a href="https://www.mos.ru/news/item/175344073/" target="_blank" rel="noopener">Единый диспетчерский центр, mos.ru</a>.</p></figure>
+
+<p>Город уже многое оцифровал на стороне заявок. С 2016 года работает Единый
+диспетчерский центр: через него прошло более 60 млн заявок, к нему подключено
+более тысячи диспетчерских служб, около 80% заявок выполняются в день подачи,
+а ИИ-ассистент обрабатывает до половины обращений. Но всё это — про скорость
+реакции на уже случившееся. Узнать заранее, в каком доме на следующей неделе
+откажет насос или лифт, по этим данным пока нельзя: данные о состоянии
+оборудования, паспорта домов, история ремонтов и обращения жителей живут в
+разных системах.</p>
+<p>Почему сейчас. В марте 2026 года правительство утвердило стратегическое
+направление цифровой трансформации строительства и ЖКХ до 2030 года
+(распоряжение № 398-р). В нём есть база данных объектов коммунальной
+инфраструктуры с электронными паспортами, включая данные об авариях, и
+платформенные решения для управления ЖКХ. Субъектам рекомендовано
+руководствоваться этим документом в своих программах. Для Москвы это не
+обязанность, а окно возможностей: тема в повестке, и город с самой развитой
+цифровой инфраструктурой может стать первым.</p>
+<h2>2. Пользователи и их задачи</h2>
+<p>Главная ошибка таких проектов — строить «платформу для всех». Я начал с того,
+кто будет открывать систему каждый день и какое решение он должен принять.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Кто</th>
+<th>Что решает</th>
+<th>Что болит сейчас</th>
+<th>Что даёт продукт</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Диспетчер ОДС</td>
+<td>Какую заявку брать первой, кого отправить</td>
+<td>Поток обращений без приоритета, одна и та же авария приходит десятком звонков</td>
+<td>Заявки, разобранные по категориям и срочности; связанные обращения сгруппированы</td>
+</tr>
+<tr>
+<td>Инженер управляющей компании</td>
+<td>Что проверить и заменить на этой неделе</td>
+<td>Обслуживание по календарю, а не по состоянию; история ремонтов в бумагах</td>
+<td>Список оборудования с риском отказа и объяснением, почему риск высокий</td>
+</tr>
+<tr>
+<td>Руководитель района</td>
+<td>Куда направить бригады и бюджет</td>
+<td>Видит только то, что уже сломалось</td>
+<td>Карта домов по уровню риска, нагрузка бригад, доля плановых работ</td>
+</tr>
+<tr>
+<td>Департамент и правительство города</td>
+<td>Как распределить бюджет капремонта, как оценить подрядчиков</td>
+<td>Нет единой картины состояния фонда</td>
+<td>Сводка по округам: износ, аварии, жалобы, динамика</td>
+</tr>
+<tr>
+<td>Житель</td>
+<td>Когда вернут воду и тепло</td>
+<td>Не знает, что происходит с его домом</td>
+<td>Статус работ по своему дому</td>
+</tr>
+</tbody>
+</table></div>
+<p>Первым пользователем я выбрал диспетчера и инженера, а не руководителя. Сводки
+для руководства ничего не стоят, если внизу никто не меняет способ работы:
+ценность возникает, когда бригада едет к насосу до аварии, а не после.</p>
+<h2>3. Рынок и позиционирование</h2>
+<p>Цифрового двойника жилого фонда в масштабе всего города с прогнозом отказов
+инженерных систем домов в открытых источниках нет. Но было бы ошибкой
+продавать продукт как «первый в России»: в Москве уже есть три системы,
+которые закрывают части задачи.</p>
+<ul>
+<li><strong>«Цифровой двойник Москвы»</strong> (с 2019 года, ДИТ) — 3D-модель города и более
+  9 тысяч аналитических слоёв для градостроительных решений. Он показывает,
+  как город выглядит, но не следит за инженерными системами внутри домов.</li>
+<li><strong>Единый диспетчерский центр</strong> — заявки жителей, их классификация и контроль
+  исполнения. Это реакция на случившееся.</li>
+<li><strong>Диспетчеризация тепловых пунктов МОЭК</strong> — онлайн-контроль почти 8 тысяч
+  тепловых пунктов; в 2024 году так предотвращено более 1 100 технологических
+  нарушений. Это предиктивный подход, но только для одной системы и одного
+  владельца.</li>
+</ul>
+<figure class="chart"><figcaption class="chart-title">Что уже есть у города и чего не хватает</figcaption><div class="table-wrap"><table class="matrix"><thead><tr><th></th><th>Цифровой двойник Москвы</th><th>Единый диспетчерский центр</th><th>Диспетчеризация МОЭК</th><th><strong>Наш продукт</strong></th></tr></thead><tbody><tr><td>Видит инженерные системы внутри дома</td><td><span class="n">нет</span></td><td><span class="n">нет</span></td><td><span class="p">частично</span> — тепловые пункты</td><td><span class="y">есть</span></td></tr><tr><td>Прогноз отказов до аварии</td><td><span class="n">нет</span></td><td><span class="n">нет</span></td><td><span class="p">частично</span> — раннее выявление нарушений</td><td><span class="y">есть</span></td></tr><tr><td>Все системы дома в одной карточке</td><td><span class="n">нет</span></td><td><span class="n">нет</span></td><td><span class="n">нет</span></td><td><span class="y">есть</span></td></tr><tr><td>Заявки и обращения жителей</td><td><span class="p">частично</span> — работы ЖКХ на карте</td><td><span class="y">есть</span></td><td><span class="n">нет</span></td><td><span class="y">есть</span> — как сигнал о доме</td></tr><tr><td>Весь город</td><td><span class="y">есть</span></td><td><span class="y">есть</span></td><td><span class="p">частично</span> — ~8 тыс. тепловых пунктов</td><td>после масштабирования</td></tr></tbody></table></div><p class="note">По открытым источникам: <a href="https://www.mos.ru/news/item/126225073/" target="_blank" rel="noopener">Цифровой двойник Москвы, 2023</a>; <a href="https://www.mos.ru/news/item/173108073/" target="_blank" rel="noopener">Цифровой двойник Москвы, 2026</a>; <a href="https://www.mos.ru/news/item/175344073/" target="_blank" rel="noopener">Единый диспетчерский центр, mos.ru</a>; <a href="https://www.moek.ru/press/news/2024/12/1105/" target="_blank" rel="noopener">МОЭК</a>.</p></figure>
+
+<p>Поэтому продукт — не «ещё один двойник» и не замена существующим системам, а
+слой, который соединяет их на уровне конкретного дома: паспорт, состояние
+оборудования, история ремонтов и обращения жителей в одной карточке, и прогноз
+отказа там, где для него есть данные. Формула для руководства: «Цифровой
+двойник Москвы показывает, как город выглядит; наш продукт показывает, как он
+работает изнутри, и предсказывает, где сломается».</p>
+<p>Из трёх вариантов связи с «Цифровым двойником Москвы» — отдельная платформа,
+слой внутри него или федерация — я рекомендовал федерацию: самостоятельная
+платформа, которая через API отдаёт свои данные слоем в городской двойник.
+Так продукт не зависит от чужой технологической дорожной карты и при этом не
+дублирует городскую систему.</p>
+<p>Мировой опыт здесь полезен, но не так, как его обычно цитируют. Virtual
+Singapore, пилот двойника района Калатасама в Хельсинки, национальная
+программа цифровых двойников Великобритании — это 3D-платформы для
+планирования и стандарты обмена данными, а не предиктивное обслуживание
+домов. Из них я взял организационные уроки: начинать с конкретной проблемы,
+расти этапами, договориться об обмене данными между ведомствами до разработки.
+Ближайший российский аналог по задаче — «Цифровой водоканал» Белгородской
+области: прогнозная аналитика на 235 объектах водоснабжения.</p>
+<h2>4. Продукт</h2>
+<p>Продукт — веб-платформа с картой жилого фонда и тремя уровнями приближения:
+город, округ и район, дом, единица оборудования. Каждый уровень отвечает на
+вопрос своего пользователя.</p>
+<p><a href="demo/">Открыть кликабельный прототип</a> — все данные в нём вымышлены.</p>
+<figure class="chart"><figcaption class="chart-title">Сводка по Москве: дома по зонам риска, бригады, износ сетей, аварии</figcaption><a href="demo/" class="shot"><img src="assets/img/overview.png" alt="Сводка по Москве: дома по зонам риска, бригады, износ сетей, аварии" loading="lazy"></a><p class="note">Кликните, чтобы открыть прототип. Все данные вымышлены.</p></figure><figure class="chart"><figcaption class="chart-title">Карта: от города к округу, району и дому</figcaption><a href="demo/" class="shot"><img src="assets/img/map.jpg" alt="Карта: от города к округу, району и дому" loading="lazy"></a><p class="note">Границы районов — Code for Germany (MIT), подложка — © участники OpenStreetMap.</p></figure>
+
+<p><strong>Сводка и карта.</strong> Руководитель видит дома по зонам риска, загрузку бригад,
+износ сетей и жалобы по округам и проваливается с карты города в район и дом.</p>
+<p><strong>Карточка дома.</strong> Паспорт здания, инженерные системы, оборудование с
+наработкой, датой последнего обслуживания и остаточным ресурсом, история
+работ. Это то, ради чего инженер откроет систему.</p>
+<figure class="chart"><figcaption class="chart-title">Карточка дома: паспорт, оборудование, история работ</figcaption><a href="demo/" class="shot"><img src="assets/img/house.png" alt="Карточка дома: паспорт, оборудование, история работ" loading="lazy"></a></figure>
+
+<p><strong>Прогнозы.</strong> Список оборудования с вероятностью отказа, горизонтом прогноза,
+уверенностью модели и источником сигнала — например, «ток двигателя и
+вибрация» для лифта. Из прогноза одним действием создаётся превентивный наряд.</p>
+<figure class="chart"><figcaption class="chart-title">Прогнозы: вероятность отказа, горизонт, уверенность, источник сигнала</figcaption><a href="demo/" class="shot"><img src="assets/img/forecasts.png" alt="Прогнозы: вероятность отказа, горизонт, уверенность, источник сигнала" loading="lazy"></a></figure>
+
+<p><strong>Заявки и бригады.</strong> Обращения жителей автоматически раскладываются по
+категориям и приоритетам, бригады планируются на смену с учётом специализации,
+а доля превентивных нарядов считается в реальном времени.</p>
+<figure class="chart"><figcaption class="chart-title">Заявки: категории и приоритеты</figcaption><a href="demo/" class="shot"><img src="assets/img/tickets.png" alt="Заявки: категории и приоритеты" loading="lazy"></a></figure><figure class="chart"><figcaption class="chart-title">Бригады и наряды: смена, загрузка, доля превентивных работ</figcaption><a href="demo/" class="shot"><img src="assets/img/brigades.png" alt="Бригады и наряды: смена, загрузка, доля превентивных работ" loading="lazy"></a></figure>
+
+<p><strong>Датчики.</strong> Телеметрия там, где она есть: температура подачи и обратки
+теплового пункта, давление и расход воды, ток и вибрация оборудования.</p>
+<h2>5. ИИ в продукте: что предсказываем и как поймём, что это работает</h2>
+<p>Для руководства прогноз описывается одной строкой: «предиктивная аналитика
+поломок, прогноз за 7–14 дней». Для команды, которая будет его строить, и для
+заказчика, который будет его принимать, этого мало.</p>
+<p><strong>Что предсказываем.</strong> Не «аварийность дома», а конкретное событие: аварийную
+заявку по определённой системе дома (отопление, водоснабжение, лифт,
+электрика) в заданном горизонте — например, 14 или 30 дней. Такую постановку
+можно проверить: событие либо случилось, либо нет.</p>
+<p><strong>На каких данных учимся.</strong> Метки берутся из истории заявок диспетчерских
+служб: в них уже есть адрес, тип неисправности (280 типов в Едином
+диспетчерском центре) и время. Признаки — паспорт дома и оборудования (год,
+тип, наработка, капремонт), история прошлых отказов, сезон и погода, а там,
+где есть, — телеметрия. Отсюда главное ограничение: большая часть старого
+фонда не оснащена датчиками, поэтому модель должна работать и без них.</p>
+<p><strong>Холодный старт.</strong> Для домов без датчиков первая версия — это не нейросеть, а
+правила и простая модель на паспорте и истории заявок: какие системы с каким
+возрастом и историей отказов ломаются чаще. Телеметрия добавляется там, где
+она уже есть: тепловые пункты МОЭК, лифты с диспетчеризацией, новые жилые
+комплексы.</p>
+<p><strong>С чем сравниваем.</strong> Модель имеет смысл, только если она лучше того, что
+инженер делает и так: правила «чем старше, тем опаснее». Хороший ориентир —
+исследование прорывов водопровода в Сиракьюсе: модель нашла 62% прорывов в 1%
+самых рискованных участков, а выбор по возрасту труб — 10%. Именно такой
+разрыв с простым правилом, а не абстрактный процент «снижения аварийности»,
+доказывает ценность модели.</p>
+<p><strong>Как поймём, что работает.</strong> Три метрики, понятные заказчику:</p>
+<ul>
+<li><strong>точность в начале списка</strong> — из 100 единиц оборудования с самым высоким
+  риском сколько действительно отказали в горизонте прогноза: у бригады
+  ограниченное время, и важны первые строки списка;</li>
+<li><strong>полнота по критическим отказам</strong> — какую долю аварий, оставляющих дом без
+  тепла, воды или лифта, модель предупредила заранее;</li>
+<li><strong>время упреждения</strong> — за сколько дней до отказа появился сигнал: прогноз за
+  день до аварии бригаде уже не помогает.</li>
+</ul>
+<figure class="chart"><figcaption class="chart-title">Сиракьюс, водопровод: какую долю прорывов предсказал каждый способ в 1% самых рискованных участков</figcaption><div class="hbars"><div class="hb-row"><div class="hb-l">Модель машинного обучения</div><div class="hb-track"><div class="hb-bar s1" style="width:62%"></div><span class="hb-v" style="left:62%">62%</span></div></div><div class="hb-row"><div class="hb-l">Правило «чем старше труба, тем опаснее»</div><div class="hb-track"><div class="hb-bar neutral" style="width:10%"></div><span class="hb-v" style="left:10%">10%</span></div></div><div class="hb-row"><div class="hb-l">Случайный выбор</div><div class="hb-track"><div class="hb-bar neutral" style="width:8%"></div><span class="hb-v" style="left:8%">8%</span></div></div></div><p class="note">Независимое исследование города и Чикагского университета: <a href="https://arxiv.org/abs/1805.03597" target="_blank" rel="noopener">Kumar et al., KDD 2018</a>. Так выглядит доказательство ценности модели: разница с простым правилом, а не процент «снижения аварийности».</p></figure>
+
+<p><strong>Человек в контуре.</strong> Модель не отправляет бригады сама: она предлагает
+инженеру список с объяснением, откуда риск, а инженер принимает или отклоняет
+прогноз. Каждое решение сохраняется — так модель учится, а у города остаётся
+понятная ответственность за решение.</p>
+<p><strong>Классификация обращений.</strong> Разбор текстов жителей по категориям и срочности
+— сильная сторона Наносемантики. Но здесь город уже продвинулся: в Едином
+диспетчерском центре работает ИИ-ассистент. Поэтому в продукте это не
+отдельная ценность, а источник данных: обращения жителей — ещё один сигнал о
+состоянии дома.</p>
+<h2>6. Метрики продукта</h2>
+<p>Главная метрика продукта — <strong>доля превентивных работ</strong>: сколько нарядов
+бригады выполнено по прогнозу и плану, а не по аварийной заявке. Она отражает
+ровно то изменение, ради которого продукт существует, и её можно считать с
+первого дня пилота.</p>
+<figure class="chart"><figcaption class="chart-title">Метрики продукта</figcaption><div class="tree"><div class="tree-top"><div class="node star">Главная метрика<br><strong>Доля превентивных работ</strong><br><span>нарядов по прогнозу и плану, а не по аварии</span></div></div><div class="tree-row"><div class="node"><strong>Аварийные заявки</strong><br><span>на 1 000 квартир</span></div><div class="node"><strong>Часы без тепла, воды, лифта</strong><br><span>на дом в месяц</span></div><div class="node"><strong>Повторные обращения</strong><br><span>по одной проблеме</span></div></div><div class="tree-label">Результат для города</div><div class="tree-row guard"><div class="node"><strong>Время реакции на аварию</strong><br><span>не растёт</span></div><div class="node"><strong>Напрасные выезды</strong><br><span>по ложным прогнозам — ниже порога</span></div></div><div class="tree-label">Ограничители — чтобы главная метрика не росла ценой вреда</div></div></figure>
+
+<p>Под ней — метрики результата, которые важны заказчику: число аварийных заявок
+на тысячу квартир, время без тепла, воды и лифта, повторные обращения по
+одной проблеме. И ограничители, которые не дают «улучшить» главную метрику
+ценой вреда: время реакции на аварийные заявки не должно расти, а доля
+напрасных выездов по ложным прогнозам — выходить за согласованный порог.</p>
+<h2>7. MVP и этапы с гейтами</h2>
+<p>Проект разбит на четыре этапа. Каждый заканчивается измеримым результатом, и
+решение о следующем принимается только после демонстрации предыдущего.</p>
+<figure class="chart"><figcaption class="chart-title">Этапы и гейты: месяцы от старта при верхней оценке сроков</figcaption><div class="gantt-row"><div class="gantt-l">0. Предпроектное исследование<span>аудит данных, пилотный ЖК, метрики</span></div><div class="gantt-track"><div class="gantt-bar s1" style="left:0.0%;width:7.0%"></div><div class="gate" style="left:7.0%" title="гейт"></div></div></div><div class="gantt-row"><div class="gantt-l">1. MVP — один жилой комплекс<span>карта, светофор, карточки, датчики</span></div><div class="gantt-track"><div class="gantt-bar s2" style="left:7.0%;width:18.6%"></div><div class="gate" style="left:25.6%" title="гейт"></div></div></div><div class="gantt-row"><div class="gantt-l">2. Пилот — один район<span>интеграция с ОДС, прогнозная модель</span></div><div class="gantt-track"><div class="gantt-bar s3" style="left:25.6%;width:37.2%"></div><div class="gate" style="left:62.8%" title="гейт"></div></div></div><div class="gantt-row"><div class="gantt-l">3. Масштабирование<span>все округа, планирование бригад</span></div><div class="gantt-track"><div class="gantt-bar s4" style="left:62.8%;width:37.2%"></div><div class="gate" style="left:100.0%" title="гейт"></div></div></div><div class="gantt-axis"><span></span><div><span style="left:0.0%">0</span><span style="left:27.9%">12</span><span style="left:55.8%">24</span><span style="left:83.7%">36</span></div></div><p class="note">Ромб — гейт: решение о следующем этапе только после демонстрации результата предыдущего. Сроки этапов — 2–3, 6–8, 12–16 и 12–16 месяцев.</p></figure>
+
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Этап</th>
+<th>Что делаем</th>
+<th>Срок</th>
+<th>Гейт — что должно быть доказано</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0. Предпроектное исследование</td>
+<td>Аудит данных диспетчерских служб, паспортов и датчиков; выбор пилотного жилого комплекса; архитектура; метрики</td>
+<td>2–3 мес.</td>
+<td>Данных достаточно для прогноза: есть история заявок с адресом и типом неисправности хотя бы за 2–3 года</td>
+</tr>
+<tr>
+<td>1. MVP — один жилой комплекс</td>
+<td>Карта, светофор, карточки домов и оборудования, подключение датчиков</td>
+<td>6–8 мес.</td>
+<td>Инженеры и диспетчеры пользуются системой каждый день</td>
+</tr>
+<tr>
+<td>2. Пилот — один район</td>
+<td>Интеграция с диспетчерскими службами, прогнозная модель</td>
+<td>12–16 мес.</td>
+<td>Модель лучше правила «по возрасту»; доля превентивных работ растёт</td>
+</tr>
+<tr>
+<td>3. Масштабирование</td>
+<td>Все округа, автоматическое планирование бригад</td>
+<td>12–16 мес.</td>
+<td>Эффект подтверждён на пилоте и окупает тиражирование</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ключевое решение здесь — нулевой этап. Без аудита данных нельзя ни обещать
+точность прогноза, ни считать экономию: в открытых источниках нет даже
+статистики аварий в жилом фонде Москвы.</p>
+<h2>8. Бизнес-модель</h2>
+<p>Для Наносемантики это был вопрос не только «как продать Москве», но и «что
+продавать следующему городу». Я рассмотрел три трека.</p>
+<figure class="chart"><figcaption class="chart-title">Три трека и рекомендованная модель</figcaption><div class="cards"><div class="card"><div class="card-h">Монолит</div><div class="card-s">Заказная разработка под Москву</div><div class="pro">+ Понятные деньги</div><div class="con">− Каждый следующий город — почти новый проект</div></div><div class="card"><div class="card-h">Фреймворк</div><div class="card-s">Стандарты и экосистема, как в Великобритании</div><div class="pro">+ Влияние на отрасль</div><div class="con">− Почти без выручки; стандарты — функция Минстроя и Росстандарта</div></div><div class="card rec"><div class=badge>рекомендовал</div><div class="card-h">Платформенный продукт</div><div class="card-s">Одно ядро, настройка под город</div><div class="pro">+ Второй город — настройка, а не разработка</div><div class="con">− Нужно с первого дня проектировать для тиражирования</div></div></div><div class="streams"><span>Выручка платформы:</span><span class="st">внедрение для первого города</span><span class="st">лицензия и адаптация для следующих</span><span class="st">ежегодное сопровождение</span></div></figure>
+
+<p>Монолит даёт понятные деньги, но каждый следующий город превращается почти в
+новый проект. Фреймворк в духе британской программы влиятелен, но почти не
+приносит выручки, а мандата на стандарты у коммерческой лаборатории нет: в
+России это функция Минстроя и Росстандарта. Поэтому я рекомендовал
+платформенный продукт. Его ядро одинаково для всех городов: карта, светофор,
+карточки, интеграция с датчиками, прогнозная модель, классификация
+обращений, разграничение доступа. Под город настраиваются источники данных и
+обучается модель.</p>
+<p>Выручка в платформенной модели складывается из трёх потоков: проектное
+внедрение для первого города, лицензия и адаптация для следующих и ежегодное
+сопровождение — обновление моделей, новые типы оборудования, обучение.</p>
+<h2>9. Работа с заказчиком и защита проекта</h2>
+<p>Проект такого масштаба защищается не технологией, а логикой и политической
+ценностью. Я построил защиту на пяти опорах: проблема и «цена бездействия»
+вместо технологии; нормативная база — распоряжение № 398-р; минимальный вход —
+MVP на одном жилом комплексе; приоритет отечественного ПО; дорожная карта с
+гейтами, где каждый следующий бюджет выделяется под уже показанный результат.</p>
+<figure class="chart"><figcaption class="chart-title">Стейкхолдеры проекта</figcaption><div class="table-wrap"><table><thead><tr><th>Кто</th><th>Роль</th><th>Что ему нужно от проекта</th></tr></thead><tbody><tr><td>Мосстратегия, Департамент экономической политики и развития</td><td>Заказчик концепции</td><td>Обоснование: проблема, нормативка, экономика, этапы</td></tr><tr><td>ДИТ Москвы</td><td>Оператор «Цифрового двойника Москвы»</td><td>Федерация: данные продукта — слоем в городской двойник</td></tr><tr><td>Диспетчерские службы, ГБУ «Жилищник», управляющие компании</td><td>Ежедневные пользователи</td><td>Прогноз встроен в привычный наряд; пилот вместе с ними</td></tr><tr><td>МОЭК, фонд капремонта</td><td>Владельцы данных о тепловых пунктах и ремонтах</td><td>Доступ к данным — условие этапа 0; нужен «внутренний чемпион»</td></tr><tr><td>Жители</td><td>Конечные выгодоприобретатели</td><td>Меньше отключений, статус работ по своему дому</td></tr></tbody></table></div></figure>
+
+<p>Отдельно — «внутренний чемпион». Мировой опыт показывает, что такие проекты
+стоят не на технологиях, а на доступе к данным разных ведомств. Без человека
+на стороне города, который откроет данные диспетчерских служб, МОЭК и фонда
+капремонта, продукт останется красивой картой.</p>
+<h2>10. Риски и что проверить первым</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Риск</th>
+<th>Что с ним делать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Данные разрознены и неполны: история заявок без адресов или типов, паспорта устарели</td>
+<td>Аудит данных — первый этап, а не часть разработки</td>
+</tr>
+<tr>
+<td>Модель не лучше простого правила</td>
+<td>Сравнение с правилом «по возрасту» — условие гейта второго этапа</td>
+</tr>
+<tr>
+<td>Красивая 3D-модель вместо пользы</td>
+<td>На MVP — карта, светофор и списки, без 3D-моделей зданий</td>
+</tr>
+<tr>
+<td>Диспетчеры и инженеры не меняют способ работы</td>
+<td>Пилот вместе с пользователями; прогноз встроен в их привычный наряд</td>
+</tr>
+<tr>
+<td>Дублирование с городскими системами</td>
+<td>Позиционирование как слоя над ними; федерация с «Цифровым двойником Москвы»</td>
+</tr>
+<tr>
+<td>Безопасность данных критической инфраструктуры</td>
+<td>Разграничение доступа, требования ФСТЭК с первого этапа</td>
+</tr>
+</tbody>
+</table></div>
+<h2>11. Итог и следующий шаг</h2>
+<p>Концепция и прототип представлены заказчику 7 мая 2026 года; решения о
+запуске пока нет.</p>
+<p>Следующим шагом я предлагаю не разработку платформы, а двухмесячный аудит
+данных и ретроспективный тест: обучить простую модель на истории заявок
+одного района за прошлые годы и показать, какую долю аварий прошлой зимы она
+предсказала бы заранее и насколько это лучше правила «по возрасту». Это
+дешевле MVP и сразу отвечает на главный вопрос проекта — есть ли в данных
+сигнал.</p>
+<p>Экономический эффект для Москвы на этом шаге сознательно не обещается.
+Опубликованные оценки предиктивного обслуживания получены в основном в
+промышленности: федеральное руководство США оценивает экономию в 8–12% к
+плановому обслуживанию. Для жилого фонда и городских сетей опубликованы
+пилоты производителей лифтов — например, на 28% меньше вызовов мастера в
+жилых домах по данным KONE — и исследования точности прогноза отказов труб.
+Цифру для Москвы даст пилот, и она будет защищаться лучше любой
+заимствованной.</p>
+<figure class="chart"><figcaption class="chart-title">Что опубликовано об эффекте предиктивного обслуживания</figcaption><div class="table-wrap"><table><thead><tr><th>Где</th><th>Что измерено</th><th>Кто измерял</th></tr></thead><tbody><tr><td>Промышленность и объекты (США)</td><td>Предиктивное обслуживание экономит 8–12% к плановому</td><td>Федеральное руководство — <a href="https://www.energy.gov/sites/prod/files/2020/04/f74/omguide_complete_w-eo-disclaimer.pdf" target="_blank" rel="noopener">DOE/FEMP</a></td></tr><tr><td>Лифты в жилых домах</td><td>На 28% меньше вызовов мастера</td><td>Производитель, методика не раскрыта — <a href="https://www.kone.us/Images/KONE_Digital_Brochure_Flow-must-go-on-AUG-2021_tcm25-109135.pdf" target="_blank" rel="noopener">KONE</a></td></tr><tr><td>Водопровод, Сиракьюс</td><td>62% прорывов в 1% самых рискованных участков</td><td>Независимое исследование — <a href="https://arxiv.org/abs/1805.03597" target="_blank" rel="noopener">Kumar et al., KDD 2018</a></td></tr><tr><td>Теплосети, Копенгаген</td><td>Более 40% отказов при проверке 10% сети</td><td>Независимое исследование — <a href="https://portal.findresearcher.sdu.dk/en/publications/predicting-pipe-failures-a-machine-learning-approach-to-asset-man/" target="_blank" rel="noopener">Jensen et al., IEEE Access 2025</a></td></tr><tr><td>Инженерные системы 6 500 зданий</td><td>Медианная экономия энергии 9%, окупаемость ~2 года</td><td>Независимое исследование — <a href="https://eta-publications.lbl.gov/publications/proving-business-case-building" target="_blank" rel="noopener">LBNL, 2020</a></td></tr></tbody></table></div><p class="note">Ни одно измерение не сделано на жилом фонде Москвы, поэтому эффект для города оценивает пилот.</p></figure>
+
+<hr />
+<h2>Источники</h2>
+<ol class="sources"><li>Мосстат, «Москва в цифрах 2024», табл. 6.15 — площадь жилых помещений — <a href="https://77.rosstat.gov.ru/storage/mediabank/%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%D0%B2%20%D1%86%D0%B8%D1%84%D1%80%D0%B0%D1%85%202024.pdf" target="_blank" rel="noopener">ссылка</a></li><li>mos.ru, программа капитального ремонта 2015–2044 — <a href="https://www.mos.ru/city/projects/kapremont/" target="_blank" rel="noopener">ссылка</a></li><li>mos.ru, замена лифтов в жилых домах — <a href="https://www.mos.ru/mayor/themes/12647050/" target="_blank" rel="noopener">ссылка</a></li><li>mos.ru, Единый диспетчерский центр, 06.09.2026 — <a href="https://www.mos.ru/news/item/175344073/" target="_blank" rel="noopener">ссылка</a></li><li>Распоряжение Правительства РФ от 02.03.2026 № 398-р — <a href="http://government.ru/docs/all/163630/" target="_blank" rel="noopener">ссылка</a></li><li>mos.ru, «Цифровой двойник Москвы», 07.07.2023 — <a href="https://www.mos.ru/news/item/126225073/" target="_blank" rel="noopener">ссылка</a></li><li>mos.ru, цифровой двойник Москвы, 21.07.2026 — <a href="https://www.mos.ru/news/item/173108073/" target="_blank" rel="noopener">ссылка</a></li><li>МОЭК, предотвращённые технологические нарушения, 2024 — <a href="https://www.moek.ru/press/news/2024/12/1105/" target="_blank" rel="noopener">ссылка</a></li><li>government.ru, рейтинг цифровой трансформации регионов за 2025 год — <a href="http://government.ru/news/58063/" target="_blank" rel="noopener">ссылка</a></li><li>GovTech Singapore, «5 things to know about Virtual Singapore» — <a href="https://www.tech.gov.sg/technews/5-things-to-know-about-virtual-singapore/" target="_blank" rel="noopener">ссылка</a></li><li>Город Хельсинки, отчёт о пилоте цифрового двойника Калатасамы, 2019 — <a href="https://www.hel.fi/hel2/tietokeskus/data/helsinki/kaupunginkanslia/3D-malli/Helsinki3D_Kalasatama_Digital_Twins_020519.pdf" target="_blank" rel="noopener">ссылка</a></li><li>Centre for Digital Built Britain, National Digital Twin Programme — <a href="https://www.cdbb.cam.ac.uk/what-we-did/national-digital-twin-programme" target="_blank" rel="noopener">ссылка</a></li><li>Kumar et al., «Using Machine Learning to Assess the Risk of and Prevent Water Main Breaks», KDD 2018 — <a href="https://arxiv.org/abs/1805.03597" target="_blank" rel="noopener">ссылка</a></li><li>U.S. DOE, FEMP, «O&amp;M Best Practices Guide, Release 3.0», разд. 5.3–5.4 — <a href="https://www.energy.gov/sites/prod/files/2020/04/f74/omguide_complete_w-eo-disclaimer.pdf" target="_blank" rel="noopener">ссылка</a></li><li>KONE, «Flow must go on», 2021 — данные производителя — <a href="https://www.kone.us/Images/KONE_Digital_Brochure_Flow-must-go-on-AUG-2021_tcm25-109135.pdf" target="_blank" rel="noopener">ссылка</a></li><li>Jensen et al., «Predicting pipe failures: a machine learning approach to asset management», IEEE Access, 2025 — <a href="https://portal.findresearcher.sdu.dk/en/publications/predicting-pipe-failures-a-machine-learning-approach-to-asset-man/" target="_blank" rel="noopener">ссылка</a></li><li>Kramer et al., LBNL, «Proving the Business Case for Building Analytics», 2020 — <a href="https://eta-publications.lbl.gov/publications/proving-business-case-building" target="_blank" rel="noopener">ссылка</a></li></ol><p class="note">Полная сверка исходных материалов проекта с первоисточниками — в <a href="https://github.com/massimo-pazzi/housing-digital-twin-case/tree/main/research" target="_blank" rel="noopener">research/</a>. Происхождение библиотек и карты в прототипе — в <a href="https://github.com/massimo-pazzi/housing-digital-twin-case/blob/main/demo/README.md" target="_blank" rel="noopener">demo/README.md</a>.</p>
+</main>
+</body>
+</html>
