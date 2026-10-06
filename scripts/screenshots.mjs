@@ -18,6 +18,7 @@ const SHOTS = [
   ["forecasts", "forecasts.png", 2000],
   ["tickets", "tickets.png", 2000],
   ["brigades", "brigades.png", 2000],
+  ["janitors", "cleaning.png", 6000], // затем тоже в JPEG
 ];
 
 mkdirSync(OUT, { recursive: true });

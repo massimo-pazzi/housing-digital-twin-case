@@ -43,14 +43,8 @@ SOURCES = [
      "https://www.cdbb.cam.ac.uk/what-we-did/national-digital-twin-programme"),
     ("syracuse", "Kumar et al., «Using Machine Learning to Assess the Risk of and Prevent Water Main Breaks», KDD 2018",
      "https://arxiv.org/abs/1805.03597"),
-    ("femp", "U.S. DOE, FEMP, «O&M Best Practices Guide, Release 3.0», разд. 5.3–5.4",
-     "https://www.energy.gov/sites/prod/files/2020/04/f74/omguide_complete_w-eo-disclaimer.pdf"),
-    ("kone", "KONE, «Flow must go on», 2021 — данные производителя",
-     "https://www.kone.us/Images/KONE_Digital_Brochure_Flow-must-go-on-AUG-2021_tcm25-109135.pdf"),
-    ("hofor", "Jensen et al., «Predicting pipe failures: a machine learning approach to asset management», IEEE Access, 2025",
-     "https://portal.findresearcher.sdu.dk/en/publications/predicting-pipe-failures-a-machine-learning-approach-to-asset-man/"),
-    ("lbnl", "Kramer et al., LBNL, «Proving the Business Case for Building Analytics», 2020",
-     "https://eta-publications.lbl.gov/publications/proving-business-case-building"),
+    ("kii", "Федеральный закон от 26.07.2017 № 187-ФЗ «О безопасности критической информационной инфраструктуры», ст. 2, п. 8 (ред. 07.04.2025)",
+     "https://www.consultant.ru/document/cons_doc_LAW_220885/c5051782233acca771e9adb35b47d3fb82c9ff1c/"),
 ]
 SRC = {k: (t, u) for k, t, u in SOURCES}
 
@@ -165,12 +159,12 @@ def fig_roadmap():
     rows = "".join(
         f'<div class="gantt-row"><div class="gantt-l">{esc(n)}<span>{esc(d)}</span></div>'
         f'<div class="gantt-track"><div class="gantt-bar s{i + 1}" style="left:{a / total * 100:.1f}%;width:{(b - a) / total * 100:.1f}%"></div>'
-        f'<div class="gate" style="left:{b / total * 100:.1f}%" title="гейт"></div></div></div>'
+        f'<div class="gate" style="left:{b / total * 100:.1f}%" title="веха"></div></div></div>'
         for i, (n, a, b, d) in enumerate(stages))
     axis = '<div class="gantt-axis"><span></span><div>' + "".join(
         f'<span style="left:{m / total * 100:.1f}%">{m}</span>' for m in (0, 12, 24, 36)) + "</div></div>"
-    return figure("Этапы и гейты: месяцы от старта при верхней оценке сроков", rows + axis,
-                  "Ромб — гейт: решение о следующем этапе только после демонстрации результата предыдущего. "
+    return figure("Этапы и вехи: месяцы от старта при верхней оценке сроков", rows + axis,
+                  "Ромб — веха: решение о следующем этапе только после демонстрации результата предыдущего. "
                   "Сроки этапов — 2–3, 6–8, 12–16 и 12–16 месяцев.")
 
 
@@ -191,11 +185,12 @@ def fig_business_model():
 
 
 def fig_stakeholders():
-    rows = [("Мосстратегия, Департамент экономической политики и развития", "Заказчик концепции",
-             "Обоснование: проблема, нормативка, экономика, этапы"),
+    rows = [("Мосстратегия, Департамент экономической политики и развития", "Инициатор и заказчик концепции",
+             "Проект, который можно предложить префектурам: проблема, нормативка, этапы"),
+            ("Префектуры округов", "Покупатели и внедряющие", "Сводка по округу, понятные вехи и модель финансирования превентивного ремонта"),
             ("ДИТ Москвы", "Оператор «Цифрового двойника Москвы»", "Федерация: данные продукта — слоем в городской двойник"),
-            ("Диспетчерские службы, ГБУ «Жилищник», управляющие компании", "Ежедневные пользователи",
-             "Прогноз встроен в привычный наряд; пилот вместе с ними"),
+            ("Диспетчерские службы, ГБУ «Жилищник», управляющие компании", "Ежедневные пользователи — и те, чью работу продукт делает видимой",
+             "Прогноз встроен в привычный наряд; правила контроля согласованы до пилота"),
             ("МОЭК, фонд капремонта", "Владельцы данных о тепловых пунктах и ремонтах",
              "Доступ к данным — условие этапа 0; нужен «внутренний чемпион»"),
             ("Жители", "Конечные выгодоприобретатели", "Меньше отключений, статус работ по своему дому")]
@@ -218,6 +213,60 @@ def fig_effects():
                   "Ни одно измерение не сделано на жилом фонде Москвы, поэтому эффект для города оценивает пилот.")
 
 
+
+def fig_demo_banner():
+    return ('<a class="demo-banner" href="demo/"><img src="assets/img/overview.png" alt="Экран прототипа" loading="lazy">'
+            '<span class="db-text"><strong>Открыть прототип</strong>'
+            '<span>От карты Москвы до карточки дома и прогноза отказа лифта. '
+            'Все данные вымышлены.</span><span class="db-btn">Перейти к прототипу →</span></span></a>')
+
+
+def fig_users():
+    html = ('<div class="flow two"><div class="flow-col"><div class="flow-h">Покупает и внедряет</div><ul>'
+            '<li>Префектуры округов</li><li>Мосстратегия — инициатор проекта</li></ul>'
+            '<p class="small">Нужна сводка по округу, отчётность, обоснование бюджета</p></div>'
+            '<div class="arrow" aria-hidden="true">≠</div>'
+            '<div class="flow-col core"><div class="flow-h">Пользуется каждый день</div><ul>'
+            '<li>Диспетчеры ОДС</li><li>Инженеры управляющих компаний</li><li>Руководители районных служб</li></ul>'
+            '<p class="small">Нужен список «что делать сегодня» — иначе продукт не меняет ни одного наряда</p></div></div>')
+    return figure("Два клиента: тот, кто покупает, и тот, чью работу продукт меняет", html)
+
+
+def fig_retro_test():
+    html = ('<div class="timeline"><div class="tl-seg train" style="flex:2">Обучение: заявки и паспорта за прошлые 2–3 года</div>'
+            '<div class="tl-seg test" style="flex:1">Проверка: следующая зима</div></div>'
+            '<div class="tl-legend">Модель и правило «по возрасту» получают одинаковые данные до начала зимы и ранжируют '
+            'оборудование по риску. Сравнивается, какая доля аварий зимы попала в верхние 10% каждого списка.</div>'
+            '<div class="decision"><div class="dc yes"><strong>Модель заметно лучше правила</strong><br>'
+            '<span>идём в MVP с прогнозом</span></div><div class="dc no"><strong>Выигрыш мал</strong><br>'
+            '<span>прогноз только для систем, где он заметен; для остальных — карточка дома и телеметрия</span></div></div>')
+    return figure("Ретроспективный тест: два месяца вместо 6–8 месяцев MVP", html,
+                  "Разделение только по времени: случайное перемешивание лет «подсмотрит» будущее и завысит результат.")
+
+
+def fig_pivots():
+    rows = [("Префектурам нужен переход от реактивного ремонта к предиктивному",
+             "В префектурах выяснилось: сейчас им важнее контроль уборки территории — дворники, техника, фото до и после",
+             "Добавил в прототип мониторинг уборки: GPS-треки дворников, план и факт маршрута, простои, покрытие"),
+            ("Продукт — первый в России цифровой двойник жилого фонда",
+             "У города уже есть Единый диспетчерский центр с ИИ-ассистентом, «Цифровой двойник Москвы» и онлайн-контроль тепловых пунктов МОЭК",
+             "Позиционирование как слоя, который соединяет эти системы на уровне дома"),
+            ("Классификация обращений жителей — ядро ценности, сильная сторона команды",
+             "В Едином диспетчерском центре ИИ-ассистент уже обрабатывает до половины обращений",
+             "Обращения стали одним из сигналов о состоянии дома, а не отдельным продуктом"),
+            ("Мировые цифровые двойники доказывают экономику проекта",
+             "Virtual Singapore, Хельсинки и британская программа — про планирование и стандарты, а не про обслуживание домов",
+             "Взял из них организационные уроки; эффект для Москвы не обещаю до пилота"),
+            ("Нулевой этап — аудит данных и техническое задание, затем MVP",
+             "Префектура заплатит за прогноз, только если его выигрыш виден на московских данных, а не на зарубежных",
+             "Добавил ретроспективный тест с заранее заданным порогом и решением для систем, где выигрыш мал")]
+    html = ('<div class="table-wrap"><table><thead><tr><th>Что думал сначала</th><th>Что изменило мнение</th>'
+            '<th>Что сделал</th></tr></thead><tbody>' +
+            "".join(f"<tr><td>{esc(a)}</td><td>{esc(b)}</td><td>{esc(c)}</td></tr>" for a, b, c in rows) +
+            "</tbody></table></div>")
+    return figure("Как менялись решения", html)
+
+
 def fig_sources():
     items = "".join(f'<li>{esc(t)} — <a href="{u}" target="_blank" rel="noopener">ссылка</a></li>' for _, t, u in SOURCES)
     return (f'<ol class="sources">{items}</ol>'
@@ -236,16 +285,19 @@ def author_block():
 FIGS = {
     "summary": fig_summary, "scale": fig_scale, "positioning": fig_positioning,
     "prototype_overview": lambda: shot("overview.png", "Сводка по Москве: дома по зонам риска, бригады, износ сетей, аварии",
-                                       "Кликните, чтобы открыть прототип. Все данные вымышлены.") +
+                                       "Все данные на скриншотах вымышлены — это прототип для обсуждения концепции, а не работающая система.") +
                                   shot("map.jpg", "Карта: от города к округу, району и дому",
                                        "Границы районов — Code for Germany (MIT), подложка — © участники OpenStreetMap."),
+    "prototype_cleaning": lambda: shot("cleaning.jpg", "Уборка территории: GPS-треки дворников, план и факт маршрута, простои, покрытие",
+                                       "Раздел добавлен после разговоров с префектурами. Данные вымышлены."),
     "prototype_house": lambda: shot("house.png", "Карточка дома: паспорт, оборудование, история работ", ""),
     "prototype_forecast": lambda: shot("forecasts.png", "Прогнозы: вероятность отказа, горизонт, уверенность, источник сигнала", ""),
     "prototype_ops": lambda: shot("tickets.png", "Заявки: категории и приоритеты", "") +
                              shot("brigades.png", "Бригады и наряды: смена, загрузка, доля превентивных работ", ""),
     "model_metrics": fig_model_metrics, "metric_tree": fig_metric_tree, "roadmap": fig_roadmap,
-    "business_model": fig_business_model, "stakeholders": fig_stakeholders, "effects": fig_effects,
-    "sources": fig_sources,
+    "stakeholders": fig_stakeholders, 
+    "sources": fig_sources, "demo_banner": fig_demo_banner, "users": fig_users,
+    "retro_test": fig_retro_test,
 }
 
 CSS = """
@@ -327,6 +379,20 @@ th{font-weight:600; color:var(--ink-2); font-size:12.5px;}
 .streams{display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center; margin-top:12px; font-size:13px;}
 .streams .st{border:1px solid var(--rule); border-radius:12px; padding:2px 10px;}
 .sources{font-size:14.5px; line-height:1.55; padding-left:1.5em;}
+.demo-banner{display:flex; gap:16px; align-items:center; margin:6px 0 24px; padding:12px; border:1px solid var(--accent); border-radius:8px; background:var(--accent-soft); color:var(--ink); text-decoration:none;}
+.demo-banner img{width:180px; height:auto; border-radius:4px; border:1px solid var(--rule); flex-shrink:0;}
+.db-text{display:flex; flex-direction:column; gap:4px; font-size:14px; line-height:1.45;} .db-text strong{font-size:16px;}
+.db-btn{color:var(--accent); font-weight:600; margin-top:2px;}
+.demo-banner:hover{border-width:2px; padding:11px;}
+@media (max-width:520px){ .demo-banner{flex-direction:column; align-items:flex-start;} .demo-banner img{width:100%;} }
+.flow.two{grid-template-columns:1fr auto 1fr;} .small{font-size:12.5px; color:var(--muted); margin:8px 0 0;}
+@media (max-width:640px){ .flow.two{grid-template-columns:1fr;} }
+.timeline{display:flex; gap:4px; font-size:13px; font-weight:550;}
+.tl-seg{padding:10px 12px; border-radius:4px; color:#fff;} .tl-seg.train{background:var(--s1);} .tl-seg.test{background:var(--s2);}
+.tl-legend{font-size:13px; color:var(--ink-2); margin:10px 0;}
+.decision{display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13.5px;}
+.dc{border:1px solid var(--rule); border-radius:6px; padding:10px 12px;} .dc span{color:var(--muted); font-size:12.5px;}
+.dc.yes{border-color:var(--ok);} .dc.no{border-style:dashed;}
 @media (max-width:520px){ body{font-size:16px; padding-block:24px 48px;} .hb-row,.gantt-row,.gantt-axis{grid-template-columns:1fr;} .gantt-axis span:first-child{display:none;} }
 """
 
@@ -347,8 +413,8 @@ def main():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Цифровой двойник ЖКХ</title>
-<meta name="description" content="Продуктовый кейс: ИИ-платформа предиктивного обслуживания жилого фонда Москвы">
+<title>Где прорвёт до звонка жителя</title>
+<meta name="description" content="Продуктовый кейс: цифровой двойник жилого фонда Москвы и прогноз отказов инженерных систем домов">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -356,7 +422,7 @@ def main():
 </head>
 <body>
 <main class="page">
-<p class="eyebrow">Продуктовый кейс · Максим Поципух · Октябрь 2026</p>
+<p class="eyebrow">Портфолио-кейс: проработка нового продукта · Максим Поципух · Октябрь 2026</p>
 {html}
 </main>
 </body>
